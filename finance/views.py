@@ -1,4 +1,5 @@
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -24,20 +25,35 @@ class RegisterView(APIView):
         user = User.objects.create_user(username=username,email=email,password=password)
         return Response({'message':'Пользователь успешно создан'},status=status.HTTP_201_CREATED)
 
-# @api_view(['GET'])
-# def ping(request):
-#     return Response({"ok": True})
-
 
 class CategoryListCreateView(ListCreateAPIView):
     serializer_class = CategorySerializer
-
+    permission_classes = [IsAuthenticated]
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class TransactionListCreateView(ListCreateAPIView):
     serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return Transaction.objects.filter(user=self.request.user)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class CategoryDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
+
+
+class TransactionDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
