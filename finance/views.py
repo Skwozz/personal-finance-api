@@ -1,14 +1,15 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import CategorySerializer, TransactionSerializer
 from .models import Category, Transaction
 from django.contrib.auth.models import User
-
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from django.db import models
 
 class RegisterView(APIView):
     def post(self, request):
@@ -57,3 +58,16 @@ class TransactionDetailView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
+
+class AnalyticsMonthlyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        transactions = request.user.transaction_set.all()
+        monthly_data = transactions.annotate(
+            month=TruncMonth('date')
+        ).values('month').annotate(
+            income = Sum('amount',filter=models.Q(category__type='IN')),
+            expense = Sum('amount',filter=models.Q(category__type='EX')),
+        ).order_by('month')
+        return Response(monthly_data)
