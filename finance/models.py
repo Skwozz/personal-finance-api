@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 
 class Category(models.Model):
     TYPE_CHOICES = [
-        ('IN', 'Income'),
-        ('EX', 'Expense'),
+        ("IN", "Income"),
+        ("EX", "Expense"),
     ]
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=2, choices=TYPE_CHOICES)

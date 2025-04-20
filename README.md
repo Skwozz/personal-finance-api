@@ -1,47 +1,107 @@
+--Personal Finance API
 
-# Personal Finance API 
+Backend-приложение для учёта личных финансов: доходов, расходов, аналитики по категориям и месяцам. Реализовано на Django + Django REST Framework с авторизацией через JWT.
 
-Проект представляет собой REST API для управления личными финансами: доходами, расходами, категориями и аналитикой. Построен на Django + DRF + JWT.
+--Функциональность
 
-##  Стек технологий
+- Регистрация и авторизация пользователей
+- CRUD-операции для категорий (доходы и расходы)
+- CRUD-операции для транзакций
+- Аналитика по категориям и по месяцам
+- JWT авторизация через SimpleJWT
+- Swagger-документация
+- Фильтрация и сортировка транзакций
+- PostgreSQL в качестве основной БД
+- Автоматические тесты на ключевые функции
 
-- Python 3.x
-- Django 5.x
+--Стек
+
+- Python 3.11+
+- Django 5.2+
 - Django REST Framework
-- djangorestframework-simplejwt (JWT авторизация)
-- SQLite (по умолчанию)
+- SimpleJWT
+- PostgreSQL
 - Swagger (drf-yasg)
+- Django Filter
 
-##  Возможности API
+--Установка и запуск
 
-###  Аутентификация
-- Регистрация: `POST /api/register/`
-- JWT токен: `POST /api/token/`
-- Обновление токена: `POST /api/token/refresh/`
+1. Клонировать репозиторий:
 
-###  Категории
-- `GET /api/categories/` — список
-- `POST /api/categories/` — создать
-- `GET /api/categories/<id>/` — получить
-- `PATCH /api/categories/<id>/` — обновить
-- `DELETE /api/categories/<id>/` — удалить
+```bash
+git clone https://github.com/Skwozz/personal-finance-api.git
+cd personal-finance-api
+```
 
-###  Транзакции
-- `GET /api/transactions/` — список
-- `POST /api/transactions/` — создать
-- `GET /api/transactions/<id>/` — получить
-- `PATCH /api/transactions/<id>/` — обновить
-- `DELETE /api/transactions/<id>/` — удалить
+2. Создать и активировать виртуальное окружение:
 
-###  В планах
-- `/analytics/monthly/` — отчёт по месяцам
-- `/analytics/category/` — суммы по категориям
-- PostgreSQL + Docker
-- Автотесты
+```bash
+python -m venv venv
+source venv/bin/activate  # для Windows: venv\Scripts\activate
+```
 
-##  Документация
-Swagger доступен по адресу:  
-`/swagger/`
+3. Установить зависимости:
 
-##  Автор
-GitHub: [Skwozz](https://github.com/Skwozz)
+```bash
+pip install -r requirements.txt
+```
+
+4. Настроить `.env` (опционально) или прописать БД в `settings.py`
+
+5. Применить миграции и запустить сервер:
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+--Авторизация
+
+1. Зарегистрироваться через `POST /api/register/`
+2. Получить JWT токен по `POST /api/token/`:
+```json
+{
+  "username": "user",
+  "password": "pass"
+}
+```
+3. Подставить токен в заголовок:
+```
+Authorization: Bearer <access_token>
+```
+
+--Эндпоинты
+
+--Категории
+- `GET /api/categories/`
+- `POST /api/categories/`
+- `PUT /api/categories/<id>/`
+- `DELETE /api/categories/<id>/`
+
+--Транзакции
+- `GET /api/transactions/`
+- `POST /api/transactions/`
+- `GET /api/transactions/?type=IN&ordering=-amount`
+
+--Аналитика
+- `GET /api/analytics/monthly/` — сумма по месяцам
+- `GET /api/analytics/category/` — сумма по категориям
+
+--Документация
+
+Swagger доступен по адресу:
+```
+/swagger/
+```
+
+--Тестирование
+
+```bash
+python manage.py test
+```
+
+Покрыты: регистрация, логин, CRUD, аналитика, защита авторизацией.
+
+--Автор
+
+[Skwozz (GitHub)](https://github.com/Skwozz)
